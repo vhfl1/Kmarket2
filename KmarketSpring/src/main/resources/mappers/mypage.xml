@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = mapper파일의 아이디 값 -->
+<mapper namespace="kr.co.kmarket.dao.MyPageDAO">
+
+	<select id="selectUserinfo" resultType="kr.co.kmarket.vo.MemberVO">
+		SELECT * FROM `km_member` WHERE `uid`=#{uid};
+	</select>
+	<select id="selectMyQnaCount" resultType="int">
+		SELECT COUNT(`uid`) AS COUNT FROM `km_cs_qna` WHERE `uid`=#{count} AND `comment`=0;
+	</select>
+	<select id="selectMyOrdCount" resultType="int">
+		SELECT COUNT(`ordUid`) AS COUNT FROM `km_product_order` WHERE `ordUid`=#{uid} AND NOT `ordComplete`='5';
+	</select>
+	<select id="selectLastOrder" resultType="kr.co.kmarket.vo.OrderItemVO">
+		SELECT a.*,b.prodName,b.company,b.thumb1,c.ordComplete FROM `km_product_order_item` AS a JOIN `km_product` AS b ON a.prodNo=b.prodNo JOIN `km_product_order` AS c ON a.`ordNo`=c.`ordNo`
+		WHERE `uid`=#{uid} ORDER BY a.`rdate` DESC LIMIT 5;
+	</select>
+	<select id="selectLastPoint" resultType="kr.co.kmarket.vo.PointVO">
+		SELECT * FROM `km_member_point` WHERE `uid`=#{uid} ORDER BY `pointNo` DESC LIMIT 5;
+	</select>
+	<select id="selectLastReview" resultType="kr.co.kmarket.vo.ReviewVO">
+		SELECT a.*,b.prodName  FROM `km_product_review` AS a JOIN `km_product` AS b
+		ON a.prodNo = b.prodNo WHERE `uid`=#{uid} ORDER BY `revNO` DESC LIMIT 5;
+	</select>
+	<select id="selectLastQna" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_qna` WHERE `uid`=#{uid} ORDER BY `no` DESC LIMIT 5;
+	</select>
+	
+	<!-- 전체주문내역 -->
+	<select id="selectMyOrder" resultType="kr.co.kmarket.vo.OrderItemVO">
+		SELECT a.*,b.prodName,b.company,b.thumb1,c.ordComplete FROM `km_product_order_item` AS a JOIN `km_product` AS b ON a.prodNo=b.prodNo JOIN `km_product_order` AS c ON a.ordNo=c.ordNo
+		WHERE `uid`=#{param1} and DATE(a.`rdate`) BETWEEN #{param2} AND #{param3} ORDER BY a.`rdate` DESC LIMIT #{param4}, 10;
+	</select>
+	<select id="selectOrdCount" resultType="int">
+		SELECT COUNT(`ordNo`) FROM `km_product_order_item` WHERE `uid`=#{param1} and DATE(`rdate`) BETWEEN #{param2} AND #{param3};
+	</select>
+	<!-- 포인트내역 -->
+	<select id="selectMyPoint" resultType="kr.co.kmarket.vo.PointVO">
+		SELECT * FROM `km_member_point` WHERE `uid`=#{param1} and DATE(`pointDate`) BETWEEN #{param2} AND #{param3} ORDER BY `pointDate` DESC LIMIT ${param4}, 10;
+	</select>
+	<select id="selectPointCount" resultType="int">
+		SELECT COUNT(`uid`) FROM `km_member_point` WHERE `uid`=#{param1} and DATE(`pointDate`) BETWEEN #{param2} AND #{param3};
+	</select>
+	<!-- 쿠폰 -->
+	<select id="selectMyCoupon" resultType="kr.co.kmarket.vo.CouponVO">
+		SELECT b.*,a.couponDate,a.endDate FROM `km_member_coupon` AS a JOIN `km_coupon` AS b
+		ON a.coupon=b.`no` WHERE `uid`=#{uid} ORDER BY `endDate` DESC;
+	</select>
+	<!-- 나의리뷰 -->
+	<select id="selectMyReview" resultType="kr.co.kmarket.vo.ReviewVO">
+		SELECT a.*,b.prodName  FROM `km_product_review` AS a JOIN `km_product` AS b
+		ON a.prodNo = b.prodNo WHERE `uid`=#{uid} ORDER BY `revNO` DESC;
+	</select>
+	<!-- 문의하기 -->
+	<select id="selectMyQna" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_qna` WHERE `uid`=#{uid} ORDER BY `no` DESC;
+	</select>
+	<!-- 회원정보 수정 -->
+	<update id="updateMember">
+		UPDATE `km_member` SET `email`=#{email}, `hp`=#{hp}, `zip`=#{zip}, `addr1`=#{addr1}, `addr2`=#{addr2}, `rdate`=NOW() WHERE `uid`=#{uid};
+	</update>
+</mapper>

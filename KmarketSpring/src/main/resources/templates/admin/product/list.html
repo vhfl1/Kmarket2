@@ -1,0 +1,131 @@
+<th:block th:include="/admin/_header.html"/>
+<script>
+	$(document).ready(function(){
+		$("#btnProductDelete").click(function(){
+			let prodNo = [];
+			let check = $('input[name=check]:checked');
+			let length = $('input:checkbox[name=check]:checked').length;
+			
+			if(length == 0){
+				alert('체크 확인 요망');
+			}else{
+				
+				$(check).each(function(){
+					prodNo.push($(this).val());
+				});
+				
+				//alert('prodNo : ' + prodNo);
+				
+				let jsonData = {"prodNo" : prodNo};
+				
+				$.ajax({
+					url : '/Kmarket/admin/productDelete',
+					method : 'GET',
+					traditional : true,
+					data : jsonData,
+					dataType : 'json',
+					success : function(data){
+						if(data.result > 0){
+							$('input[name=check]:checked').parent().parent().remove();
+							alert(data.result + "건이 삭제되었습니다.");
+							location.href="/Kmarket/admin/product/list";
+						}
+					}
+				});
+			} //else 끝
+		});
+		
+		$('#btnProductRegister').click(function(){
+			location.href="/Kmarket/admin/product/register";
+		});
+	});
+</script>
+<article class="article_product_list">
+    <nav>
+        <h3>
+            상품현황
+        </h3>
+        <p>
+            HOME > 상품관리 > <strong> 상품목록 </strong> 
+        </p>
+    </nav>
+    <section>
+        <div class="search">
+            <select>
+                <option value="">상품명</option>
+                <option value="">상품1</option>
+                <option value="">상품1</option>
+                <option value="">상품1</option>
+                <option value="">상품1</option>
+            </select>
+            <input type="text" placeholder="키워드 입력">
+            <input type="button" value="검색">
+        </div>
+        <table>
+            <tr>
+                <td><input type="checkbox" name="all"></td>
+                <td>사진</td>
+                <td>상품코드</td>
+                <td style="text-align: center;" width="200px">상품명</td>
+                <td>판매가격</td>
+                <td>할인율</td>
+                <td>포인트</td>
+                <td>재고</td>
+                <td>판매자</td>
+                <td>조회</td>
+                <td>관리</td>
+             </tr>
+             <tr th:each="article,i:${article}">
+                 <td>
+                 	<input type="checkbox" name="check" th:value="${article.prodNo}">
+                 </td>
+                 <td><img th:src="@{/image/}+${article.thumb1}"></img></td>
+                 <td>
+                 	[[${article.prodNo}]]
+                 </td>
+                 <td>
+                 	<p style="border: 0px">
+                 		[[${article.prodName}]]
+                 	</p>
+                 </td>
+                 <td>[[${article.price}]]</td>
+                 <td>[[${article.discount}]]</td>
+                 <td>[[${article.point}]]</td>
+                 <td>[[${article.stock}]]</td>
+                 <td>[[${article.seller}]]</td>
+                 <td>[[${article.hit}]]</td>
+                 <td>
+                     <a href="">|삭제|</a>
+                     <a href="">|수정|</a>
+                 </td>
+             </tr>
+            </table>
+            <div class="list_button">
+                <input type="button" value="선택삭제">
+                <input type="button" value="상품등록">
+            </div>
+            <div class="list_page">
+                <span class="prev" th:if="${groups[0]>=1}">
+                    <a th:href="@{/admin/product/list(pg=${groups[0]})}">< 이전</a>
+                </span>
+                
+                <span class="num">
+                <th:block th:each="num:${#numbers.sequence(groups[0],groups[1])}">
+                    <a th:href="@{/admin/product/list(pg=${num})}" 
+                    	th:class="${num==currentPage ? 'on':'off'}"+"${num==currentPage?'num current':'num'}">[[${num}]]</a>
+                </th:block>
+                </span>
+                
+                <span class="next" th:if="${groups[1] <= lastPageNum}">
+                    <a th:href="@{/admin/product/list(pg=${groups[1]})}" class="next">다음 ></a>
+                </span>
+            </div>
+            <div class="tip">
+                <p>
+                    Tip! 전자상거래 등에서의 상품 등의 정보제공에 관한 고시에 따라 총 35개 상품군에 대해 상품 특성 등을 양식에 따라 입력할 수 있습니다.
+                </p>
+            </div>
+        </section>
+    </article>
+</main>
+<th:block th:include="/admin/_footer.html"/>

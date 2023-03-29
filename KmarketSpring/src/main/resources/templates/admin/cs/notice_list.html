@@ -1,0 +1,70 @@
+<th:block th:include="/admin/_header.html"/>
+<article class="article_list">
+    <nav>
+        <h3>공지사항 목록</h3>
+        <p>
+            HOME > 고객센터 > <strong>공지사항</strong>
+        </p>
+    </nav>
+    <section>
+        <select name="" id="">
+            <option value="">유형선택</option>
+            <option value="">유형1</option>
+            <option value="">유형2</option>
+            <option value="">유형3</option>
+        </select>
+        <table border="0">
+            <tr>
+                <th><input type="checkbox"></th>
+                <th>번호</th>
+                <th>유형</th>
+                <th>제목</th>
+                <th>조회</th>
+                <th>날짜</th>
+                <th>관리</th>
+            </tr>
+            <tr th:each="notice:${notice}">
+                <td><input type="checkbox"></td>
+                <td>
+                	[[${notice.no}]]
+                </td>
+                <td>[[${notice.cate}]]</td>
+                <td class="article_title">
+                	<p>
+						 <a th:href="@{/admin/cs/notice/view(no=${notice.no})}" class="list">[[${notice.title}]]</a>               	
+                	</p>			
+                </td>
+                <td>[[${notice.hit}]]</td>
+                <td>[[${notice.rdate}]]</td>
+                <td>
+                    <a href="" style="display: block;">[수정]</a>
+                    <a href="">[삭제]</a>
+                </td>
+           	</tr>
+        </table>
+        <div class="list_button">
+            <input type="button" value="선택삭제">
+            <input type="button" value="등록하기">
+        </div>
+        <div class="list_page">
+        	    <span class="prev" th:if="${groups[0]>=1}">
+        	    	<a th:href="@{/admin/cs/notice/list(pg=1)}"><< 처음으로</a>
+                    <a th:href="@{/admin/cs/notice/list(pg=${groups[0]-1})}">< 이전</a>
+                </span>
+                
+                <span class="num">
+                <th:block th:each="num:${#numbers.sequence(groups[0],groups[1])}">
+                    <a th:href="@{/admin/cs/notice/list(pg=${num})}" 
+                    	th:class="${num==currentPage ? 'on':'off'}"+"${num==currentPage?'num current':'num'}">[[${num}]]</a>
+                </th:block>
+                </span>
+                
+                <span class="next" th:if="${groups[1] <= lastPageNum}">
+                    <a th:href="@{/admin/cs/notice/list(pg=${groups[1]+1})}">다음 ></a>
+                    <a th:href="@{/admin/cs/notice/list(pg=${lastPageNum})}">끝으로>></a>
+                </span>
+        </div>
+        </section>
+    </article>
+</main>
+<th:block th:include="/admin/_footer.html"/>

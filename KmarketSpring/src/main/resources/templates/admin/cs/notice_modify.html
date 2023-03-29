@@ -1,0 +1,47 @@
+<th:block th:include="/admin/_header.html"/>
+<article class="article_modify">
+    <nav>
+        <h3>
+            공지사항 수정
+        </h3>
+        <p>
+            HOME > 고객센터 > <Strong> 공지사항 </Strong>
+        </p>
+    </nav>
+    <section>
+        <form th:action="@{/admin/cs/notice/modify}" method="post">
+			<input type="hidden" name="no" th:value="${article.no}">
+            <table>
+                <tr>
+                    <td>유형</td>
+                    <td>
+                        <select>
+                            <option value="">유형선택</option>
+                            <option value="" selected>서비스현황</option>
+                            <option value="">유형선택113</option>
+                            <option value="">유형선택23232323</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>제목</td>
+                    <td>
+                        <input type="text" name="title" th:value="${article.title}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>내용</td>
+                    <td>
+                        <textarea name="content" cols="30" rows="10" placeholder="내용을 입력합니다.">[[${article.content}]]</textarea>
+                    </td>
+                </tr>
+            </table>
+            <div class="modify_button">
+                <a th:href="@{/admin/cs/notice/view(no=${article.no})}"><input type="button" value="취소하기"></a>
+                <a><input type="submit" value="수정하기"></a>
+            </div>
+        </form>
+    </section>
+    </article>
+</main>
+<th:block th:include="/admin/_footer.html"/>

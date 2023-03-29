@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = mapper파일의 아이디 값 -->
+<mapper namespace="kr.co.kmarket.dao.ProductDAO">
+	<!-- product list -->
+	<select id="selectProductByParam" resultType="kr.co.kmarket.vo.ProductVO">
+		SELECT * FROM `km_product` ORDER BY ${param} DESC LIMIT 8;
+	</select>
+	<select id="selectProducts" resultType="kr.co.kmarket.vo.ProductVO">
+		SELECT * FROM `km_product` WHERE `cate1`=#{arg0} AND `cate2`=#{arg1} 
+		ORDER BY ${arg2} DESC 
+		limit #{arg3}, 10;
+	</select>
+	<select id="selectProductByPrice" resultType="kr.co.kmarket.vo.ProductVO">
+		SELECT * FROM `km_product` WHERE `cate1`=#{arg0} AND `cate2`=#{arg1} ORDER BY `price` ASC;
+	</select>
+	<select id="selectCountTotal" resultType="int">
+		SELECT count(`prodNo`) FROM `km_product` WHERE `cate1`=#{arg0} AND `cate2`=#{arg1};
+	</select>
+	
+	<!-- product view -->
+	<select id="selectProduct" resultType="kr.co.kmarket.vo.ProductVO">
+		SELECT * FROM `km_product` WHERE `prodNo`=#{param1};
+	</select>
+	<select id="selectReviews" resultType="kr.co.kmarket.vo.ReviewVO">
+		SELECT * FROM `km_product_review` WHERE `prodNo`=#{param1};
+	</select>
+	<select id="selectReviewCountTotal" resultType="int">
+		SELECT count(`revNo`) FROM `km_product_review` WHERE `prodNo`=#{param1} ORDER BY `revNo` DESC 
+		limit #{param2}, 10;;
+	</select>
+	<select id="selectProductByKeyword" resultType="kr.co.kmarket.vo.ProductVO">
+		SELECT * FROM `km_product` WHERE `prodName` LIKE CONCAT ('%',#{keyword},'%');
+	</select>
+	<select id="selectProductByKeywordTotal" resultType="int">
+		SELECT count(`prodNo`) FROM `km_product` WHERE `prodName` LIKE CONCAT ('%',#{keyword},'%');
+	</select>
+	
+	<!-- 장바구니 추가-->
+	<insert id="addCart">
+		insert into `km_product_cart` set
+		`uid`=#{uid},
+		`prodNo`=#{prodNo},
+		`count`=#{count},
+		`price`=#{price},
+		`discount`=#{discount},
+		`disPrice`=#{disPrice},
+		`point`=#{point},
+		`delivery`=#{delivery},
+		`total`=#{total},
+		`rdate`=now();
+	</insert>
+
+	<!-- 장바구니 목록-->
+	<select id="selectCarts" resultType="kr.co.kmarket.vo.CartVO">
+		select a.*, b.`prodName`, b.`descript`, b.`thumb1` from `km_product_cart` as a
+		join `km_product` as b 
+		on a.`prodNo`=b.`prodNo` 
+		where `uid`=#{uid} 
+		order by `cartNo` desc;
+	</select>
+	<delete id="deleteCart">
+		delete from `km_product_cart` where `cartNo`=#{cartNo};
+	</delete>
+	
+	<!-- 장바구니에서 주문목록 불러오기 -->
+	<select id="selectOrder" resultType="kr.co.kmarket.vo.CartVO">
+		select a.*, b.`prodName`, b.`descript`, b.`thumb1` from `km_product_cart` as a
+		join `km_product` as b 
+		on a.`prodNo`=b.`prodNo` 
+		where `cartNo`=#{cartNo}  
+		order by `cartNo` desc;
+	</select>
+	
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = mapper파일의 아이디 값 -->
+<mapper namespace="kr.co.kmarket.dao.CsDAO">
+	<!-- 고객센터 메인 -->
+	<select id="selectNoticeMain" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_notice` WHERE `parent`=0 ORDER BY `no` DESC LIMIT 5;
+	</select>
+	<select id="selectQnaMain" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_qna` WHERE `parent`=0 ORDER BY `no` DESC LIMIT 5;
+	</select>
+	
+	<!-- 공지사항 -->
+	<select id="selectNotice" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_notice` ORDER BY `no` DESC LIMIT #{pg},10;
+	</select>
+	<select id="selectNoticeByGroup" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_notice` WHERE `group` = #{arg0} ORDER BY `no` DESC LIMIT #{arg1},10;
+	</select>
+	<select id="selectNoticeArticle" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_notice` WHERE `no` = #{no};
+	</select>
+	<select id="countNotice" resultType="int">
+		SELECT COUNT(`no`) FROM `km_cs_notice`;
+	</select>
+	<select id="countNoticeByGroup" resultType="int">
+		SELECT COUNT(`no`) FROM `km_cs_notice` WHERE `group` = #{group};
+	</select>
+	
+	<!-- 자주묻는질문 -->
+	<select id="selectFaq" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_faq` WHERE `group`=#{group};
+	</select>
+	<select id="selectFaqCate" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT `cate`,COUNT(`cate`) AS `count` FROM `km_cs_faq` WHERE `group` = #{group} GROUP BY `cate`;
+	</select>
+	<select id="selectFaqArticle" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_faq` WHERE `no` = #{no};
+	</select>
+	
+	<!-- 문의하기 -->
+	<select id="selectQna" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_qna` WHERE `parent`=0 ORDER BY `no` DESC LIMIT #{pg},10;
+	</select>
+	<select id="selectQnaByGroup" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_qna` WHERE `group` = #{arg0} AND `parent` = 0 ORDER BY `no` DESC LIMIT #{arg1},10;
+	</select>
+	<select id="selectQnaArticle" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT a.*,b.content AS `reply` FROM `km_cs_qna` AS a LEFT JOIN `km_cs_qna` AS b
+		ON a.`no`=b.`parent` WHERE a.`no` = #{no};
+	</select>
+	<select id="selectQnaComment" resultType="kr.co.kmarket.vo.CsVO">
+		SELECT * FROM `km_cs_qna` WHERE `parent` = #{no};
+	</select>
+	<select id="countQna" resultType="int">
+		SELECT COUNT(`no`) FROM `km_cs_qna` WHERE `parent`=0;
+	</select>
+	<select id="countQnaByGroup" resultType="int">
+		SELECT COUNT(`no`) FROM `km_cs_qna` WHERE `group` = #{group} AND `parent`=0;
+	</select>
+	<insert id="insertQna">
+		INSERT INTO `km_cs_qna` 
+		(`group`, `cate`, `title`, `content`, `uid`, `regip`, `rdate`) 
+		VALUES (#{group}, #{cate}, #{title}, #{content}, #{uid}, #{regip}, NOW());
+	</insert>
+	
+</mapper>

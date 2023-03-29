@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = mapper파일의 아이디 값 -->
+<mapper namespace="kr.co.kmarket.dao.PopupDAO">
+	
+	<!-- 판매자정보 -->
+	<select id="selectSeller" resultType="kr.co.kmarket.vo.MemberVO">
+		SELECT * FROM `km_member` WHERE `company`=#{company};
+	</select>
+	
+	<!-- 수취확인 -->
+	<update id="updateOrdComplete">
+		UPDATE `km_product_order` SET `ordComplete`=5 WHERE `ordNo`=#{ordNO};
+	</update>
+	
+	<!-- 상품리뷰 -->
+	<insert id="insertReview">
+		INSERT INTO `km_product_review` (`prodNo`,`content`,`uid`,`rating`,`regip`,`rdate`)
+		VALUES (#{prodNo}, #{content}, #{uid}, #{rating}, #{regip}, NOW());
+	</insert>
+	
+	<!-- 주문상세 -->
+	<select id="selectOrderInfo" resultType="kr.co.kmarket.vo.OrderItemVO">
+		SELECT a.*,b.recipname,b.recipHp,b.recipZip,b.recipAddr1,b.recipAddr2,b.ordComplete,c.company,c.prodName,c.thumb1 FROM `km_product_order_item` AS a
+		JOIN `km_product_order` AS b 
+		ON a.ordNo=b.ordNo
+		JOIN `km_product` AS c 
+		ON a.prodNo=c.prodNo
+		WHERE a.prodNo=#{prodNO};
+	</select>
+	
+	<!-- 문의하기 -->
+	<insert id="insertMyQna">
+		INSERT INTO `km_cs_qna` (`group`,`cate`, `company`,`title`,`content`,`uid`,`regip`,`rdate`)
+		VALUES (#{group}, #{cate}, #{company}, #{title}, #{content}, #{uid}, #{regip}, NOW());
+	</insert>
+</mapper>
